@@ -38,13 +38,13 @@ rm -rf "$UIT"; mkdir -p "$UIT"
 
 # ── wat elke uitgave krijgt ──────────────────────────────────────────
 # De motor: overal hetzelfde.
-KERN="kb-app.js kb-data.js kb-supabase.js kb-media.js kb-sync.js kb-verbinding.js kb-statistiek.js kb-beheer.js"
+KERN="kb-app.js kb-data.js kb-demo.js kb-supabase.js kb-media.js kb-sync.js kb-verbinding.js kb-statistiek.js kb-beheer.js"
 BORD_SCHERMEN="kb-bord.js kb-school.js kb-platform.js kb-statistiekpaneel.js kb-docx.js"
 PLAN_SCHERMEN="kb-school.js kb-doelzoeker.js kb-verslag.js kb-plan.js kb-thema.js"
 
 bouw(){
   app=$1; naam=$2; ander=$3; anderNaam=$4; anderPad=$5; panelen=$6
-  schermen=$7; paginas=$8; heeftBord=$9
+  schermen=$7; paginas=$8; heeftBord=$9; heeftPlan=${10}
   D="$UIT/$app"
   mkdir -p "$D/src" "$D/data" "$D/supabase"
 
@@ -85,6 +85,7 @@ window.KB_APP = {
      knop "Bord openen" naar de andere app, met de groep mee. */
   heeftBord: $heeftBord,
   panelen: [$panelen],
+  planbord: $heeftPlan,
   /* Waar beide uitgaven staan. Volledige adressen, met de mapnaam er los
      bij als terugval voor een testserver of een ander domein. Dit is de
      enige plek waar die adressen staan. */
@@ -149,12 +150,12 @@ EOF
 
 echo "── uitgeven ($V) ──"
 bouw keuzebord "Keuzebord" planbord "Planbord" "../planbord/" \
-  "'statistiek','leerlingen','pictos','hoeken','uiterlijk','groep','functies'" \
-  "$BORD_SCHERMEN" "index.html inloggen.html bord.html testbord.html school.html beheer.html platform.html diagnose.html 404.html" true
+  "'vandaag','statistiek','leerlingen','pictos','hoeken','uiterlijk','groep','functies'" \
+  "$BORD_SCHERMEN" "index.html inloggen.html bord.html testbord.html school.html beheer.html platform.html demo.html diagnose.html 404.html" true false
 
 bouw planbord "Planbord" keuzebord "Keuzebord" "../keuzebord-app/" \
   "'vandaag','week','themas','taken','doelen','observaties','groep'" \
-  "$PLAN_SCHERMEN" "index.html inloggen.html school.html beheer.html diagnose.html 404.html" false
+  "$PLAN_SCHERMEN" "index.html inloggen.html school.html beheer.html diagnose.html 404.html" false true
 
 # ── wat er nooit in mag ──────────────────────────────────────────────
 # De geschiedenis van de werkplaats kan niet openbaar. De uitgaven
@@ -204,6 +205,15 @@ kop "$UIT/planbord"  /tmp/kb-kop-planbord.md
 
 n=$(grep -rlE "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" "$UIT" 2>/dev/null \
     | xargs grep -hoE "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" 2>/dev/null \
-    | grep -vcE "@(school|mijnschool|school-a|school-b)\.nl" || true)
+    | grep -vcE "@(school|mijnschool|school-a|school-b|voorbeeld|deregenboog|platform|tweede)\.nl" || true)
+# Voorbeeldadressen staan in de proeven, de leesmij en het schema; die
+# horen erbij. Alles daarbuiten is een echt adres dat per ongeluk mee is
+# gelift, en dat mag niet publiek. Nul hoort het antwoord te zijn.
 echo "  e-mailadressen die geen voorbeeld zijn: ${n:-0}"
+if [ "${n:-0}" -gt 0 ]; then
+  grep -rlE "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" "$UIT" 2>/dev/null \
+    | xargs grep -hoE "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" 2>/dev/null \
+    | grep -vE "@(school|mijnschool|school-a|school-b|voorbeeld|deregenboog|platform|tweede)\.nl" \
+    | sort -u | sed 's/^/    LET OP: /'
+fi
 echo "── klaar in $UIT ──"
