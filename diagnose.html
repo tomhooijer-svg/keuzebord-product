@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wat zie ik hier</title>
+<style>
+  body{ margin:0; padding:26px 22px 60px; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+        background:#f7f6f4; color:#1a2233; line-height:1.55; }
+  .vel{ max-width:760px; margin:0 auto; }
+  h1{ font-size:1.5rem; letter-spacing:-.02em; margin:0 0 4px; }
+  p.uitleg{ color:#5a6478; margin:0 0 24px; }
+  .rij{ display:flex; gap:12px; padding:11px 0; border-bottom:1px solid #e6e3de; align-items:baseline; }
+  .rij b{ flex:none; width:190px; font-weight:600; font-size:.9rem; color:#39435a; }
+  .rij span{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86rem; word-break:break-all; }
+  .goed{ color:#2e7d54; } .mis{ color:#b4342a; font-weight:600; }
+  .kop{ margin:30px 0 6px; font-size:.74rem; font-weight:600; letter-spacing:.06em;
+        text-transform:uppercase; color:#8b93a5; }
+  button{ margin-top:26px; padding:12px 22px; border:0; border-radius:999px; background:#3b6ff0;
+          color:#fff; font-size:.95rem; font-weight:600; cursor:pointer; font-family:inherit; }
+  pre{ background:#fff; border:1px solid #e6e3de; border-radius:12px; padding:14px;
+       font-size:.8rem; overflow-x:auto; white-space:pre-wrap; }
+</style>
+</head>
+<body>
+<div class="vel">
+  <h1>Wat zie ik hier</h1>
+  <p class="uitleg">Deze pagina hoeft niet in te loggen en laadt de app niet. Hij zegt alleen
+     wat er op dit apparaat staat. Klik onderaan op de knop en stuur de tekst door —
+     dan hoef je niets over te typen.</p>
+  <div id="uit"></div>
+  <div class="kop">Om door te sturen</div>
+  <pre id="plat">bezig…</pre>
+  <button id="kopieer">Kopieer deze tekst</button>
+</div>
+
+<script>
+/* Alles wat we willen weten, zonder de app te starten: draait de goede
+   versie hier, komt de code binnen, en wat staat er in de opslag. Als de
+   app zelf niet opstart is dit het enige wat nog iets kan zeggen. */
+(function () {
+  var uit = document.getElementById('uit');
+  var regels = [];
+
+  function rij(naam, waarde, oordeel){
+    regels.push([naam, waarde]);
+    var d = document.createElement('div'); d.className = 'rij';
+    var b = document.createElement('b'); b.textContent = naam;
+    var s = document.createElement('span');
+    s.textContent = waarde;
+    if (oordeel === true) s.className = 'goed';
+    if (oordeel === false) s.className = 'mis';
+    d.appendChild(b); d.appendChild(s); uit.appendChild(d);
+  }
+  function kop(t){
+    var d = document.createElement('div'); d.className = 'kop'; d.textContent = t; uit.appendChild(d);
+    regels.push(['── ' + t + ' ──', '']);
+  }
+
+  kop('waar je bent');
+  rij('adres', location.href);
+  rij('map', location.pathname.replace(/[^/]*$/, ''));
+
+  /* Kan deze browser het bord aan?
+     Het bord hangt op school aan een digibord, en dat draait vaak zijn
+     eigen browser -- die van Prowise bijvoorbeeld. Zo'n browser is soms
+     een paar jaar oud. Dan is de vraag niet "werkt het" maar "wat mist
+     hij", en dat hoort hier te staan in plaats van in een wit scherm. */
+  kop('kan deze browser het bord aan');
+  var steunt = function (eigenschap, waarde) {
+    try { return !!(window.CSS && CSS.supports && CSS.supports(eigenschap, waarde)); }
+    catch (e) { return false; }
+  };
+  var eisen = [
+    ['opslag in de browser', (function(){ try { localStorage.setItem('_kb_proef','1');
+        localStorage.removeItem('_kb_proef'); return true; } catch (e) { return false; } })()],
+    ['fotokluis (IndexedDB)', !!window.indexedDB],
+    ['verbinding met de server (fetch)', typeof fetch === 'function'],
+    ['beloften (Promise)', typeof Promise === 'function'],
+    ['tekst aanvullen (padStart)', typeof ''.padStart === 'function'],
+    ['adresregel lezen (URLSearchParams)', typeof URLSearchParams === 'function'],
+    ['eigenschappen samenvoegen (Object.assign)', typeof Object.assign === 'function'],
+    ['slepen met een vinger (pointer events)', 'PointerEvent' in window],
+    ['rooster voor de hoeken (css grid)', steunt('display', 'grid')],
+    ['kleuren van de app (css-variabelen)', steunt('--proef', '1')],
+    ['de vinger niet laten scrollen (touch-action)', steunt('touch-action', 'none')]
+  ];
+  var mist = [];
+  eisen.forEach(function (e) {
+    rij(e[0], e[1] ? 'ja' : 'NEE', e[1]);
+    if (!e[1]) mist.push(e[0]);
+  });
+  rij('aanraakpunten', String(navigator.maxTouchPoints || 0));
+  rij('schermmaat', window.innerWidth + ' bij ' + window.innerHeight +
+      ' (scherpte ' + (window.devicePixelRatio || 1) + ')');
+  rij('deze browser noemt zich', navigator.userAgent);
+  rij('oordeel', mist.length ? 'deze browser mist: ' + mist.join(', ')
+                             : 'deze browser kan alles wat het bord vraagt', !mist.length);
+
+  kop('de opslag van dit apparaat');
+  var sleutels = [];
+  try {
+    for (var i = 0; i < localStorage.length; i++) sleutels.push(localStorage.key(i));
+    rij('opslag leesbaar', 'ja', true);
+    rij('sleutels', sleutels.length ? sleutels.join(', ') : 'leeg');
+    var g = localStorage.getItem('kb_v5');
+    rij('gegevens', g ? Math.round(g.length / 1024) + ' KB' : 'niets bewaard');
+    /* Het adres van de database staat vast in de code. Deze sleutel is
+       alleen een omweg voor de proeven; leeg is dus gewoon goed. */
+    rij('omweg naar een testserver', localStorage.getItem('kb_server') || 'geen (zo hoort het)');
+    /* De app bewaart je sessie onder kb_sessie -- niet onder een sleutel
+       met "supabase" erin. Daar zocht deze pagina eerst naar, en dan lijkt
+       iemand uitgelogd terwijl hij dat niet is. */
+    var rauw = localStorage.getItem('kb_sessie');
+    if (!rauw) rij('ingelogd', 'nee, geen sessie bewaard', false);
+    else {
+      try {
+        var ses = JSON.parse(rauw);
+        var tot = ses.verloopt || ses.expires_at || ses.vervalt;
+        var nog = tot ? Math.round((tot * (String(tot).length > 11 ? 1 : 1000) - Date.now()) / 60000) : null;
+        rij('ingelogd', 'ja' + (ses.email ? ' als ' + ses.email : ''), true);
+        if (nog !== null) rij('sessie nog geldig', nog > 0 ? nog + ' minuten' : 'VERLOPEN', nog > 0);
+      } catch (e) { rij('ingelogd', 'sessie staat er maar is onleesbaar', false); }
+    }
+  } catch (e) {
+    rij('opslag leesbaar', 'NEE — ' + e.message, false);
+  }
+
+  kop('komt de code binnen');
+  var bestanden = ['src/kb-app.js', 'src/kb-data.js', 'src/kb-beheer.js', 'src/kb-stijl.css'];
+  var klaar = 0;
+  bestanden.forEach(function (naam) {
+    var t0 = Date.now();
+    fetch(naam, { cache: 'no-store' }).then(function (r) {
+      rij(naam, r.status + ' (' + (Date.now() - t0) + ' ms)', r.ok);
+      if (r.ok && naam === 'src/kb-app.js') {
+        return r.text().then(function (tekst) {
+          var m = tekst.match(/bouw:\s*'([^']*)'/);
+          var n = tekst.match(/naam:\s*'([^']*)'/);
+          rij('deze app heet', n ? n[1] : 'onbekend', !!n);
+          rij('versie van de code', m ? m[1] : 'geen stempel gevonden', !!m);
+        });
+      }
+    }).catch(function (e) {
+      rij(naam, 'KOMT NIET BINNEN — ' + e.message, false);
+    }).then(function () {
+      if (++klaar === bestanden.length) setTimeout(plat, 400);
+    });
+  });
+
+  /* Tot hier weten we alleen dat de bestanden binnenkomen. Dat is niet
+     hetzelfde als: de app start. Dus starten we hem hier, in een lijstje
+     op deze pagina, en kijken wat eruit komt. Blijft hij wit, dan staat
+     de reden hieronder. */
+  kop('start de app het?');
+  var proefvak = document.createElement('iframe');
+  proefvak.style.cssText = 'width:0;height:0;border:0;position:absolute;left:-9999px';
+  var gemeld = false;
+  proefvak.addEventListener('load', function () {
+    setTimeout(function () {
+      if (gemeld) return; gemeld = true;
+      try {
+        var d = proefvak.contentDocument, w = proefvak.contentWindow;
+        var pad = w.location.pathname.replace(/.*\//, '');
+        var tekst = (d.body ? d.body.innerText : '').trim();
+        rij('waar de app uitkomt', pad || '(leeg)', !!pad);
+        rij('staat er iets op het scherm', tekst.length + ' tekens', tekst.length > 30);
+        if (tekst.length <= 30) rij('scherm blijft leeg', 'JA -- dit is het witte scherm', false);
+        rij('eerste woorden', tekst.slice(0, 70).replace(/\n/g, ' ') || '(niets)');
+        /* Op het inlogscherm hoort de app níet geladen te zijn -- dat is
+           een kale pagina. Alleen als hij ergens anders uitkomt zegt dit
+           iets. */
+        if (/inloggen/.test(pad)) {
+          rij('wat er gebeurde', 'doorgestuurd naar het inlogscherm — zo hoort het als je niet (meer) ingelogd bent', true);
+        } else {
+          rij('de app is geladen', (typeof w.KB !== 'undefined') ? 'ja' : 'NEE, de code draait niet',
+              typeof w.KB !== 'undefined');
+          var menu = d.querySelectorAll('.zij-knop');
+          rij('menu-items', menu.length ? menu.length + ': ' +
+              [].map.call(menu, function (x) { return x.textContent.trim(); }).join(', ') : 'geen menu',
+              menu.length > 0);
+        }
+      } catch (e) {
+        rij('kon niet kijken', e.message, false);
+      }
+      plat();
+    }, 6000);
+  });
+  proefvak.src = 'beheer.html';
+  document.body.appendChild(proefvak);
+  window.addEventListener('error', function (e) {
+    rij('fout tijdens starten', (e.message || '') + ' — ' + (e.filename || '').replace(/.*\//, ''), false);
+  }, true);
+  setTimeout(function () {
+    if (!gemeld) { gemeld = true; rij('de app start niet', 'na 12 seconden nog niets', false); plat(); }
+  }, 12000);
+
+  function plat(){
+    document.getElementById('plat').textContent =
+      regels.map(function (r) { return r[1] ? r[0] + ': ' + r[1] : r[0]; }).join('\n');
+  }
+  setTimeout(plat, 9000);
+
+  document.getElementById('kopieer').addEventListener('click', function () {
+    var t = document.getElementById('plat').textContent;
+    if (navigator.clipboard) navigator.clipboard.writeText(t);
+    this.textContent = 'Gekopieerd';
+  });
+})();
+</script>
+</body>
+</html>
