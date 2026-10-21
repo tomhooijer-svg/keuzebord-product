@@ -242,3 +242,29 @@ Stap 2b is de kolommigratie, met een eigen proef. Die raakt ook de
 synchronisatie in de app, en dat is werk dat je apart wilt kunnen
 nakijken.
 
+## 2026-10-21 · De productrepo heet keuzebord-product
+
+`tomhooijer-svg/keuzebord-product`, één schone commit, geen geschiedenis
+van de werkplaats. `test/product-kopie.sh` zet de inhoud klaar en
+controleert meteen of er geen wegwijzer naar de oude gegevens in is
+geglipt.
+
+Wat er niet in gaat: `oud.html` (de v1 van één school), `design/`
+(schetsen uit een eerdere ronde), `docs/PLAN.md` en `docs/HOSTING.md`
+(die beschrijven hoe de werkplaats is ontstaan, inclusief wat er in die
+geschiedenis zit) en `docs/ADVIES-AGENDA-EN-KOPPELING.md` (gaat over het
+planbord). Niets daarvan wordt weggegooid; het blijft in de werkplaats.
+
+Voorlopig blijft de werkplaats de plek waar gebouwd wordt en is de
+productrepo de uitkomst. Dat kan later omdraaien, maar niet midden in
+een mijlpaal.
+
+## 2026-10-21 · De Supabase-regio is eu-west-1, en dat is goed
+
+Ierland. EU, dus de verhuizing die als eerste risico in het
+hostingvoorstel stond hoeft niet. Dat was het enige punt dat met een
+tweede school erop veel duurder zou worden.
+
+Blijft gelden voor dít project. Komt er ooit een tweede, dan is Ierland
+of Frankfurt de enige goede keuze.
+

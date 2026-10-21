@@ -35,6 +35,7 @@ daardoor is synchronisatie het lastigste deel van deze code. In
 Je hebt Postgres 16, node en een Chromium nodig.
 
 ```sh
+npm install              # alleen voor de proeven; de app zelf heeft niets nodig
 sh test/opzetten.sh      # database, nabootsing van Supabase, webserver
 sh test/proefschool.sh   # een school met twee accounts en zes groepen
 ```
