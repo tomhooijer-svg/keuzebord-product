@@ -309,7 +309,15 @@ const NIET_KLIKKEN = /Uitloggen|Wisselen van account|Bord openen|Afmelden/i;
           try { __klik(kn); } catch (e) { return { naam, stuk: e.message }; }
           await __wacht(220);
           const na = __afdruk();
-          const apparaat = window.__apparaatvenster > vensterVoor;
+          /* Een link die in een nieuw tabblad opent hoort niets te
+             veranderen aan dít scherm. Dat is geen dode knop; hij doet
+             zijn werk ergens anders -- net als een bestandskiezer.
+
+             Kijken naar de link erómheen en niet naar het element zelf:
+             het tekstvakje binnen zo'n link wordt hier ook als
+             aanklikbaar geteld, en dat is geen <a>. */
+          const nieuwTabblad = !!(kn.closest && kn.closest('a[target="_blank"]'));
+          const apparaat = nieuwTabblad || window.__apparaatvenster > vensterVoor;
           /* Ging er een venster open? Dan hangen daar knoppen in die
              verder niemand indrukt. Hoeveel het er zijn geven we door;
              de proef komt er zo een voor een op terug. */
@@ -335,7 +343,8 @@ const NIET_KLIKKEN = /Uitloggen|Wisselen van account|Bord openen|Afmelden/i;
         try { __klik(kn2); } catch (e) { return { naam: naam2, stuk: e.message }; }
         await __wacht(220);
         const na2 = __afdruk();
-        const apparaat2 = window.__apparaatvenster > vensterVoor2;
+        const apparaat2 = !!(kn2.closest && kn2.closest('a[target="_blank"]'))
+                          || window.__apparaatvenster > vensterVoor2;
         return { naam: naam2, deedIets: apparaat2 || voor2 !== na2, apparaat: apparaat2 };
         }, pad);
       } catch (e) {

@@ -414,3 +414,77 @@ anders. Een kleuter heeft niets verkeerd gedaan.
 Geteld wordt vanaf maandag, uit het logboek dat er toch al is. Na het
 weekend begint iedereen blanco.
 
+## 2026-10-21 · Een thema is een stel kleuren, geen tweede bord
+
+Negen thema's: Standaard, Herfst, Sinterklaas, Kerst, Winter, Lente,
+Pasen, Zomer en Carnaval. Elk thema zet drie dingen: de achtergrond, de
+accentkleur, en het palet waarmee de randjes boven de hoeken worden
+gekleurd. Verder niets.
+
+Geen plaatjes, geen kerstballen, geen pieten. Dat gaat tegen de
+verwachting in bij het woord "thema", en het is een bewuste keuze: de
+vormgeving die je koos zet kleur alleen waar hij iets betekent, en een
+bord vol versiering leidt een kleuter af van de hoek waar hij naar moet
+kijken. Als je er later toch iets decoratiefs bij wilt, is dat een eigen
+gesprek.
+
+Technisch zijn het dan ook alleen waarden: een paar hex-kleuren die als
+css-variabelen op de pagina worden gezet. Er wordt nergens een kopie van
+het bord gemaakt, en de opmaak blijft op één plek staan. De proef
+controleert dat ook echt: na het wisselen van thema staan er evenveel
+hoeken, plekken en kinderen als ervoor.
+
+Heeft de leerkracht bij een hoek zelf een kleur gekozen, dan wint die
+altijd -- ook als het thema wisselt. Haar keuze is geen suggestie.
+
+## 2026-10-21 · Twee handleidingen, allebei als webpagina
+
+`demo.html` is de korte: wat het is, vier dingen om meteen te proberen,
+acht functies in één regel elk, en wat er gebeurt als de wifi wegvalt.
+Bedoeld om iemand enthousiast te maken in twee minuten.
+
+`handleiding.html` is de hele, voor scholen die het afnemen: inloggen,
+de kinderen, de hoeken, het bord in de klas, wat je kunt aanzetten,
+statistieken, thema's, school en thuis, wat er gebeurt zonder wifi, het
+schoolbeheer, wat we van kinderen bewaren, en wat te doen als er iets
+vastloopt. Bereikbaar vanuit het menu van de leerkracht.
+
+Allebei webpagina's en geen pdf. Een pdf raakt verouderd op het moment
+dat je hem verstuurt, en je kunt er niet naartoe linken vanuit het
+scherm waar iemand vastloopt.
+
+## 2026-10-21 · Een picto landt op zijn plek, niet op het midden
+
+Het ging zo: je liet los boven een hoek, het picto vloog naar het midden
+van de kaart, en daarna sprong het naar zijn plekje. Die sprong gebeurt
+precies op het moment dat een kleuter kijkt of het gelukt is.
+
+Nu vliegt hij meteen naar de plek waar hij echt komt te staan, en laat
+die plek even zien dat er iemand is geland: het picto zet zich op zijn
+plaats en er gaat één ring open die meteen weer vervaagt. Kort en zacht
+-- het moet zeggen "hier zit hij nu", niet de aandacht opeisen.
+
+De maat van die ring wordt gemeten, niet geraden: de cirkel is op elk
+bord een andere grootte. Met `offsetWidth`, want een lopende
+schaalanimatie telt anders mee in de maat.
+
+## 2026-10-21 · Mijlpaal 6: het blad voor het oudergesprek
+
+De statistieken stonden er al: wat opvalt, hoe vaak elke hoek wordt
+gekozen, wie met wie speelt, en per kind. Wat ontbrak was waar je brief
+om vroeg — het moet bruikbaar zijn in een oudergesprek.
+
+Dat is nu één blad per kind: de samenvatting in één zin, waar het kind
+speelt, **waar het niet kwam**, en met wie. Dat derde punt staat er
+bewust bij, want dat is vaak waar het gesprek over gaat.
+
+Het print vanuit het scherm zelf: bij het printen blijft alleen dat blad
+staan, zonder zijbalk, knoppen of demobalk. Zo hoeft er geen tweede
+pagina te bestaan die dezelfde cijfers nog eens uitrekent, en loopt het
+nooit uit de pas met wat op het scherm staat.
+
+Onderaan staat een regel die zegt wat het níét is: "dit gaat alleen over
+wat dit kind op het bord heeft gekozen — niet over wat het kan of heeft
+geleerd." Een lijstje met hoeken en percentages ziet eruit als een
+beoordeling, en dat is het niet.
+
