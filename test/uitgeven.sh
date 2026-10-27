@@ -44,7 +44,7 @@ rm -rf "$UIT"; mkdir -p "$UIT"
 
 # ── wat elke uitgave krijgt ──────────────────────────────────────────
 # De motor: overal hetzelfde.
-KERN="kb-app.js kb-testbanner.js kb-pictobank.js kb-data.js kb-demo.js kb-supabase.js kb-media.js kb-sync.js kb-verbinding.js kb-statistiek.js kb-beheer.js"
+KERN="kb-app.js kb-testbanner.js kb-pictobank.js kb-kaartje.js kb-data.js kb-demo.js kb-supabase.js kb-media.js kb-sync.js kb-verbinding.js kb-statistiek.js kb-beheer.js"
 BORD_SCHERMEN="kb-bord.js kb-school.js kb-platform.js kb-statistiekpaneel.js kb-docx.js"
 PLAN_SCHERMEN="kb-school.js kb-doelzoeker.js kb-verslag.js kb-plan.js kb-thema.js"
 
@@ -230,15 +230,18 @@ kop "$UIT/planbord"  /tmp/kb-kop-planbord.md
 
 n=$(grep -rlE "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" "$UIT" 2>/dev/null \
     | xargs grep -hoE "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" 2>/dev/null \
-    | grep -vcE "@(school|mijnschool|school-a|school-b|voorbeeld|deregenboog|platform|tweede)\.nl" || true)
+    | grep -vcE "@((school|mijnschool|school-a|school-b|voorbeeld|deregenboog|platform|tweede)\.nl|[a-z0-9.-]+\.invalid)" || true)
 # Voorbeeldadressen staan in de proeven, de leesmij en het schema; die
-# horen erbij. Alles daarbuiten is een echt adres dat per ongeluk mee is
-# gelift, en dat mag niet publiek. Nul hoort het antwoord te zijn.
+# horen erbij. Adressen op .invalid ook: dat domein is officieel
+# vastgelegd om nooit te bestaan, en het is precies wat er achter een
+# gebruikersnaam zit (juf.marieke@keuzebord.invalid). Alles daarbuiten
+# is een echt adres dat per ongeluk mee is gelift, en dat mag niet
+# publiek. Nul hoort het antwoord te zijn.
 echo "  e-mailadressen die geen voorbeeld zijn: ${n:-0}"
 if [ "${n:-0}" -gt 0 ]; then
   grep -rlE "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" "$UIT" 2>/dev/null \
     | xargs grep -hoE "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" 2>/dev/null \
-    | grep -vE "@(school|mijnschool|school-a|school-b|voorbeeld|deregenboog|platform|tweede)\.nl" \
+    | grep -vE "@((school|mijnschool|school-a|school-b|voorbeeld|deregenboog|platform|tweede)\.nl|[a-z0-9.-]+\.invalid)" \
     | sort -u | sed 's/^/    LET OP: /'
 fi
 echo "── klaar in $UIT ──"
